@@ -164,22 +164,72 @@
     grid.innerHTML = html;
   }
 
+  // Shown when data/news.json cannot be fetched or parsed. Without this the
+  // news page would sit on its "Loading news..." card forever, which reads as
+  // a hung page rather than a failed request. Home-page markup is untouched on
+  // failure: its own static placeholder is already a sensible fallback.
+  function renderNewsError() {
+    var grid = document.getElementById('news-grid');
+    if (!grid) return;
+
+    grid.setAttribute('aria-busy', 'false');
+    grid.innerHTML =
+      '<article class="news-card" role="status">' +
+      '<div class="news-card-body">' +
+      '<h3 class="news-card-title">We couldn\u2019t load the news</h3>' +
+      '<p class="news-card-desc">Please check your connection and try again. ' +
+      'You can also see the latest posts from the City in the Facebook section below.</p>' +
+      '<button type="button" class="btn btn-secondary" data-news-retry>Try again</button>' +
+      '</div></article>';
+
+    var retry = grid.querySelector('[data-news-retry]');
+    if (retry) {
+      retry.addEventListener('click', function () {
+        showLoading();
+        loadNews();
+      });
+    }
+  }
+
+  // Restore the "loading" card so a retry gives visible feedback.
+  function showLoading() {
+    var grid = document.getElementById('news-grid');
+    if (!grid) return;
+    grid.setAttribute('aria-busy', 'true');
+    grid.innerHTML =
+      '<article class="news-card" role="status">' +
+      '<div class="news-card-body">' +
+      '<h3 class="news-card-title">Loading news...</h3>' +
+      '<p class="news-card-desc">Fetching news and updates from Legazpi City.</p>' +
+      '</div></article>';
+  }
+
   function loadNews() {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', NEWS_DATA_URL, true);
+    xhr.timeout = 10000;
     xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          try {
-            var data = JSON.parse(xhr.responseText);
-            var articles = (data && data.news) || [];
-            renderHomeNews(articles);
-            renderNewsPage(articles);
-          } catch (e) {
-            // Silent fail - placeholder content remains
-          }
-        }
+      if (xhr.readyState !== 4) return;
+      if (xhr.status !== 200) {
+        // Covers HTTP errors and status 0 (offline / blocked request).
+        renderNewsError();
+        return;
       }
+      var articles;
+      try {
+        var data = JSON.parse(xhr.responseText);
+        articles = data && Array.isArray(data.news) ? data.news : null;
+      } catch (e) {
+        articles = null;
+      }
+      if (!articles) {
+        renderNewsError();
+        return;
+      }
+      renderHomeNews(articles);
+      renderNewsPage(articles);
+      var grid = document.getElementById('news-grid');
+      if (grid) grid.setAttribute('aria-busy', 'false');
     };
     xhr.send();
   }
