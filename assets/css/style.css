@@ -2335,6 +2335,78 @@ body.mobile-menu-open {
   }
 }
 
+/* Mayor / Vice Mayor cards - Government Page (rendered by assets/js/officials.js)
+   Colours come from theme tokens so the cards follow light and dark mode. */
+.exec-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.exec-card .card-body {
+  padding: 1.5rem;
+}
+
+.exec-avatar {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: var(--color-bg-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.exec-avatar i {
+  font-size: 2.5rem;
+  color: var(--color-primary);
+}
+
+.exec-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.exec-badge {
+  display: inline-block;
+  background: var(--color-primary-solid);
+  color: var(--color-white);
+  padding: 4px 14px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+}
+
+.exec-contacts {
+  font-size: 0.85rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 10px;
+}
+
+.exec-contacts a {
+  color: var(--color-text);
+}
+
+/* Muted without opacity so the text keeps its contrast ratio. */
+.exec-contacts .is-unlisted {
+  color: var(--color-text-light);
+}
+
+.officials-source-credit {
+  font-size: 0.98rem;
+  color: var(--color-text-light);
+  margin-top: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.officials-source-credit a {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
 /* Councilor Cards - Government Page */
 .councilor-card {
   background: var(--color-white);
